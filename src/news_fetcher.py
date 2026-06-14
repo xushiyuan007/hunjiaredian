@@ -17,12 +17,10 @@ class NewsFetcher:
         ]
     
     def fetch_recent_news(self, days=3):
-        """抓取最近几天的婚姻家事新闻"""
         news_list = []
         end_date = datetime.now()
         start_date = end_date - timedelta(days=days)
         
-        # 模拟新闻数据（实际项目中可接入新闻API）
         mock_news = [
             {
                 "title": "2026年婚姻登记新规解读：4种情形仍禁止结婚",
@@ -52,11 +50,10 @@ class NewsFetcher:
                 "title": "定安法院成功调解一起同居关系子女抚养纠纷",
                 "category": "子女抚养",
                 "date": "2026-06-12",
-                "summary": "定安法院通过"法官+特邀调解员"线上协同调解模式，成功化解一起未达法定婚龄同居后的子女抚养纠纷。"
+                "summary": "定安法院通过法官加特邀调解员，线上协同调解模式，成功化解一起未达法定婚龄同居后的子女抚养纠纷。"
             },
         ]
         
-        # 按日期过滤
         for news in mock_news:
             news_date = datetime.strptime(news["date"], "%Y-%m-%d")
             if start_date <= news_date <= end_date:
@@ -71,11 +68,9 @@ class DingTalkPusher:
         self.secret = secret
     
     def push_news(self, news_list):
-        """推送新闻到钉钉"""
         if not news_list:
             return False
         
-        # 按分类整理
         categories = {}
         for news in news_list:
             cat = news["category"]
@@ -83,17 +78,15 @@ class DingTalkPusher:
                 categories[cat] = []
             categories[cat].append(news)
         
-        # 构建消息
         today = datetime.now().strftime("%Y年%m月%d日")
-        markdown = f"# 📰 婚姻家事每日热点新闻\n📅 {today}\n\n"
+        markdown = "# 📰 婚姻家事每日热点新闻\n📅 " + today + "\n\n"
         
         for category, items in categories.items():
-            markdown += f"## 【{category}】\n"
+            markdown += "## 【" + category + "】\n"
             for i, news in enumerate(items, 1):
-                markdown += f"**{i}. {news['title']}**\n"
-                markdown += f"> {news['summary']}\n\n"
+                markdown += "**" + str(i) + ". " + news["title"] + "**\n"
+                markdown += "> " + news["summary"] + "\n\n"
         
-        # 发送钉钉消息
         data = {
             "msgtype": "markdown",
             "markdown": {
@@ -106,5 +99,5 @@ class DingTalkPusher:
             response = requests.post(self.webhook, json=data)
             return response.status_code == 200
         except Exception as e:
-            print(f"推送失败: {e}")
+            print("推送失败:", e)
             return False
