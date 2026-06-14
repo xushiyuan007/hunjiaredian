@@ -2,11 +2,9 @@ import os
 import sys
 sys.path.append('./src')
 
-from news_fetcher import NewsFetcher
-from dingtalk_push import DingTalkPusher
+from news_fetcher import NewsFetcher, DingTalkPusher
 
 def main():
-    # 获取配置
     webhook = os.getenv('DINGTALK_WEBHOOK')
     secret = os.getenv('DINGTALK_SECRET')
     days = int(os.getenv('NEWS_DAYS', '3'))
@@ -15,7 +13,6 @@ def main():
         print("错误：未配置DINGTALK_WEBHOOK")
         return
     
-    # 抓取新闻
     print(f"开始抓取最近 {days} 天的婚姻家事新闻...")
     fetcher = NewsFetcher()
     news = fetcher.fetch_recent_news(days=days)
@@ -26,7 +23,6 @@ def main():
     
     print(f"成功抓取 {len(news)} 条新闻")
     
-    # 推送到钉钉
     pusher = DingTalkPusher(webhook, secret)
     success = pusher.push_news(news)
     
