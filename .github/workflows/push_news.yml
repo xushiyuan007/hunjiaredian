@@ -1,0 +1,29 @@
+name: 每日婚姻家事新闻推送
+
+on:
+  schedule:
+    - cron: '0 1 * * *'  # 北京时间早上9点
+  workflow_dispatch:
+
+jobs:
+  push-news:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: 设置Python环境
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: 安装依赖
+        run: |
+          pip install -r requirements.txt
+          
+      - name: 运行新闻推送
+        env:
+          DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
+          DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
+          NEWS_DAYS: ${{ secrets.NEWS_DAYS }}
+        run: |
+          python main.py
